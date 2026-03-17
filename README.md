@@ -1,6 +1,6 @@
 # Graph Analyzer
 
-It performs a structural analysis on an undirected graph and their attribute-defined subgraphs. By providing an edge list and node attributes, you can automate the extraction of the following metrics of the graph and attribute-based subgraph
+Project for 'Advanced Scientific Programming in Python' course. The project will focused on reading and analyzing graphs. It will perform a structural analysis on an undirected graph and their attribute-defined subgraphs. By providing an edge list and node attributes, it will automate the extraction of the following metrics of the graph and attribute-based subgraph:
 
 - Number of nodes.
 - Number of edges.
@@ -13,9 +13,11 @@ It performs a structural analysis on an undirected graph and their attribute-def
 - Edges weight distribution (if weighted graph)
 - Assortativity of the selected attribute
 
-All generated statistics and processed data are organized and saved into a dedicated directory for easy post-processing and visualization.
+All generated statistics and processed data will be organized and saved into a dedicated directory for easy post-processing and visualization.
 
 ## Input example
+
+The input formats are the same as those accepted for [cytoscape](https://cytoscape.org/) to import a network and attributes from table.
 
 ### 1. Network Edges File
 A two or three-column tab-delimited file. The header must include `Source` and `Target` (and optionally `Weight`).
