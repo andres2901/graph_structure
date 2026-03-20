@@ -15,7 +15,7 @@ import pandas as pd
 
 # CONSTANTS
 
-UW = "Unweigthed"
+UW = "Unweighted"
 W = "Weighted"
 
 
@@ -57,11 +57,11 @@ def load_graph(edges_file: str, node_file: str, attribute: str) \
                     print(f"'Weight' column has a bad name in the edge file")
                     sys.exit(1)
                 else:
-                    graph_type = UW
+                    graph_type = W
             elif len(edges_df.columns) > 3:
                 sys.exit(f"edge file have more than three colums")
             else:
-                graph_type = W
+                graph_type = UW
     except FileNotFoundError:
         sys.exit(f"Error: Data file '{edges_df}' not found.")
     except PermissionError:
@@ -112,7 +112,7 @@ def main() -> None:
     parser.add_argument('-a', '--attribute', type=str, default=1, help="Name of the attribute for subgraphs")
 
     args = parser.parse_args()
-    edges, nodes, type = load_graph(args.edges_file, args.node_file, args.attribute)
+    edges, nodes, graph_type = load_graph(args.edges_file, args.node_file, args.attribute)
     
 
 if __name__ == "__main__":
