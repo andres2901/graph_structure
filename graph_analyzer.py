@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """
-Graph Analyzer package
+Graph Analyzer tool
 
-This package perform a structural analysis of an undirected graph
+This tool perform a structural analysis of an undirected graph
 and their attribute-defined subgraphs. returning multiple metrics
 related to composition, connectivity, assortativity, distribution
 and centrality.
 """
 
 import sys
+import os
 import argparse
 import numpy as np
 import pandas as pd
+from graph_module import GraphObject
+from graph_module import SubGraphObject
 
 # CONSTANTS
 
@@ -19,8 +22,10 @@ UW = "Unweighted"
 W = "Weighted"
 
 
-def load_graph(edges_file: str, node_file: str, attribute: str) \
-    -> list[pd.DataFrame, pd.DataFrame, str]:
+def load_graph(edges_file: str, 
+               node_file: str, 
+               attribute: str
+    ) -> list[pd.DataFrame, pd.DataFrame, str]:
     """Check and store the input files of the graph
 
     Args:
@@ -103,6 +108,82 @@ def load_graph(edges_file: str, node_file: str, attribute: str) \
     return edges_df, nodes_df, graph_type
 
 
+def process_graph(edges_file: str, 
+                  node_file: str, 
+                  attribute: str,
+                  output_dir: str
+    ) -> None:
+    """Process the data and write the output.
+
+    Args:
+        gff_path: Path to the input GFF file.
+        fasta_path: Path to the input fasta file.
+        attribute: String representing the attribute for subgraphs.
+        output_dir: Path to the output directory.
+
+    Returns:
+        None
+
+    Raises:
+        PermissionError: If the file cannot be written.
+        OSError: If any other I/O error occurs.
+    """
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    edges, nodes, graph_type = load_graph(edges_file, node_file, attribute)
+    input_graph = GraphObject(edges, nodes, graph_type)
+    assortativity = input_graph.assortativity(attribute)
+    input_graph.distributions_statistic()
+        
+    main_stats = os.path.join(output_dir, "Main_graph_stats.txt")
+    graph_stats = input_graph.stats()
+    
+    try:
+        with open(main_stats, 'w') as f:
+            f.write(f"Statistics of graph '{edges_file}':\n")
+            f.write(f"  Graph type: {graph_stats[0]}\n")
+            f.write(f"  Number of nodes: {graph_stats[1]}\n")
+            f.write(f"  Number of edges: {graph_stats[2]}\n")
+            f.write(f"  Density: {graph_stats[3]}\n")
+            f.write(f"  Number of connected components: {graph_stats[4]}\n")
+            f.write(f"  Transitivity: {graph_stats[5]}\n")
+            f.write(f"  Assortativity of '{attribute}': {assortativity}\n")   
+    except PermissionError:
+        sys.exit(f"Error: No write permission for '{main_stats}'.")
+    except OSError as e:
+        sys.exit(f"Error writing file '{main_stats}': {e}")
+    
+    distributions = input_graph.distributions_statistic()
+    
+    if distributions[0] == W:
+        distributions[1].to_csv(os.path.join(output_dir, "Node_characteristics.txt"),
+                                sep='\t')
+        distributions[2].to_csv(os.path.join(output_dir, "Node_stats.txt"),
+                                sep='\t')
+        distributions[3].to_csv(os.path.join(output_dir, "Edge_stats.txt"),
+                                sep='\t')
+    elif distributions[0] == UW:
+        distributions[1].to_csv(os.path.join(output_dir, "Node_characteristics.txt"),
+                                sep='\t')
+        distributions[2].to_csv(os.path.join(output_dir, "Node_stats.txt"),
+                                sep='\t')
+    
+    subgraph = SubGraphObject(input_graph, attribute)
+    general_sub = subgraph.subgraphs()
+    subgraph.calculate_metrics
+    
+    subgraph_dir = os.path.join(output_dir, "SubGraphs")
+    if not os.path.exists(subgraph_dir):
+            os.makedirs(subgraph_dir)
+    
+    for key in general_sub:
+        info_dir = os.path.join(subgraph_dir, key)
+        if not os.path.exists(info_dir):
+            os.makedirs(info_dir)
+
+    
 def main() -> None:
     """Parse command-line arguments and launch the graph analyzer pipeline."""
     parser = argparse.ArgumentParser(description="Structural analysis of graph and attribute-base subgraphs")
@@ -110,10 +191,10 @@ def main() -> None:
     parser.add_argument('-n', '--node-file', type=str, required=True, help="Input TSV file with node attributes.")
     parser.add_argument('-o', '--output-dir', type=str, default='./', help="Directory for output files.")
     parser.add_argument('-a', '--attribute', type=str, default=1, help="Name of the attribute for subgraphs")
-
-    args = parser.parse_args()
-    edges, nodes, graph_type = load_graph(args.edges_file, args.node_file, args.attribute)
     
+    args = parser.parse_args()
+    process_graph(args.edges_file, args.node_file, args.attribute, args.output_dir)
+        
 
 if __name__ == "__main__":
     main()
