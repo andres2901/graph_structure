@@ -13,7 +13,7 @@ setup(
     description="Calculate structural properties of graphs and subgraphs based on node attributes.",
     long_description=open(path.join(here, "README.md"), encoding="utf-8").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/andres2901/graph_analyzer",
+    url="https://github.com/andres2901/graph_structure",
     author="Andres F. Lizcano Salas",
     author_email="andres.salas-lizcano@ebc.uu.se",
     license="GNU AFFERO",
