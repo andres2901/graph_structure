@@ -1,6 +1,6 @@
 # Graph Structure
 
-Package focused on reading and analyzing graphs structures. It will perform a structural analysis on an undirected graph and their attribute-defined subgraphs. By providing an edge list and node attributes, it will automate the extraction of the following metrics of the graph and attribute-based subgraph:
+Package focused on reading and analyzing graphs structures based on NetworkX functions. It will perform a structural analysis on an undirected graph and their attribute-defined subgraphs. By providing an edge list and node attributes, it will automate the extraction of the following metrics of the graph and attribute-based subgraph:
 
 - Number of nodes.
 - Number of edges.
